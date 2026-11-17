@@ -26,8 +26,10 @@ const $ = (id) => document.getElementById(id);
 // ============ TEMA ============
 const themeToggles = document.querySelectorAll('.theme-toggle');
 function updateMetaThemeColor(theme) {
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'dark' ? '#17171c' : '#5d7b7a');
+  const color = theme === 'dark' ? '#17171c' : '#5d7b7a';
+  document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
+    meta.setAttribute('content', color);
+  });
 }
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -88,7 +90,6 @@ $('form-registro').addEventListener('submit', async (e) => {
   }
   try {
     const userCred = await createUserWithEmailAndPassword(auth, $('email-registro').value.trim(), $('password-registro').value);
-    // Guardar el nombre en la base de datos bajo /users/{uid}
     await update(ref(db, `users/${userCred.user.uid}`), { nombre });
   } catch (err) {
     $('error-registro').textContent = traducirError(err.code);
@@ -167,24 +168,18 @@ function iniciarEscuchaNombres() {
   unsubscribeUsers = onValue(ref(db, 'users'), (snapshot) => {
     const users = snapshot.val() || {};
     const nombrePropio = (users[currentUser.uid] || {}).nombre;
-
-    // Buscar "el otro" usuario (el primero que no sea yo)
     const otroUid = Object.keys(users).find(uid => uid !== currentUser.uid);
     const nombreOtro = otroUid ? (users[otroUid] || {}).nombre : null;
 
-    // Actualizar el título de la sección del otro
+    $('user-email').textContent = nombrePropio || currentUser.email;
+
     if (nombreOtro) {
       $('nombre-otro').textContent = nombreOtro;
     } else {
       $('nombre-otro').textContent = 'la otra persona';
     }
 
-    // Mostrar banner si a mí me falta el nombre
-    if (!nombrePropio) {
-      $('banner-nombre').style.display = 'flex';
-    } else {
-      $('banner-nombre').style.display = 'none';
-    }
+    $('banner-nombre').style.display = nombrePropio ? 'none' : 'flex';
   }, (error) => {
     console.error('Error al leer usuarios:', error);
   });
@@ -200,7 +195,7 @@ $('btn-guardar-nombre').addEventListener('click', async () => {
     $('input-nombre-propio').value = '';
   } catch (err) {
     console.error(err);
-    alert('No se pudo guardar el nombre.');
+    alert('No se pudo guardar el nombre. Revisa las reglas de Firebase.');
   } finally {
     btn.disabled = false;
   }

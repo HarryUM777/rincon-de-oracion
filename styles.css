@@ -64,6 +64,15 @@
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* Fondo del html para cubrir las áreas seguras del móvil (notch, home indicator) */
+html {
+  background-color: var(--bg-1);
+  transition: background-color 0.35s ease;
+}
+html[data-theme="dark"] {
+  background-color: var(--bg-3);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -80,13 +89,13 @@ body {
   color: var(--text);
   background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   transition: background 0.35s ease, color 0.35s ease;
 }
 
-/* ============ BOTÓN DE TEMA ============ */
 .theme-toggle {
   width: 40px;
   height: 40px;
@@ -120,9 +129,9 @@ body {
   background: var(--surface-soft);
 }
 
-/* ============ AUTH ============ */
 .auth-container {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,7 +261,6 @@ body {
   line-height: 1.4;
 }
 
-/* ============ BOTONES ============ */
 .btn-primary {
   background: var(--primary);
   color: #ffffff;
@@ -305,7 +313,6 @@ body {
   color: var(--primary-dark);
 }
 
-/* ============ APP ============ */
 .app-container {
   max-width: 1240px;
   margin: 0 auto;
@@ -385,7 +392,6 @@ body {
   background: var(--surface-soft);
 }
 
-/* ============ BANNER NOMBRE ============ */
 .banner-nombre {
   display: flex;
   align-items: center;
@@ -716,7 +722,6 @@ body {
   }
 }
 
-/* ============ VERSÍCULO ============ */
 .verse-footer {
   margin: 32px 0 12px;
 }
@@ -826,7 +831,6 @@ body {
   transform: scale(1.35);
 }
 
-/* ============ ANIMACIONES ============ */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -859,7 +863,6 @@ body {
   }
 }
 
-/* ============ RESPONSIVE ============ */
 @media (max-width: 640px) {
   .app-container {
     padding: 20px 16px 16px;

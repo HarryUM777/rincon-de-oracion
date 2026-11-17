@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#5d7b7a">
+  <meta name="theme-color" content="#5d7b7a" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17171c" media="(prefers-color-scheme: dark)">
   <title>Diario de Oración Compartido</title>
   <script>
     (function () {
@@ -11,6 +12,10 @@
         const stored = localStorage.getItem('theme');
         const theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+        const color = theme === 'dark' ? '#17171c' : '#5d7b7a';
+        document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+          m.setAttribute('content', color);
+        });
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'light');
       }
