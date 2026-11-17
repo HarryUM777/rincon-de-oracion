@@ -41,6 +41,7 @@
         <p class="auth-error" id="error-login"></p>
       </form>
       <form id="form-registro" class="auth-form">
+        <label><span>Tu nombre</span><input type="text" id="nombre-registro" required maxlength="50" autocomplete="name" placeholder="Cómo te llamas"></label>
         <label><span>Correo electrónico</span><input type="email" id="email-registro" required autocomplete="email"></label>
         <label><span>Contraseña (mínimo 6 caracteres)</span><input type="password" id="password-registro" required autocomplete="new-password" minlength="6"></label>
         <button type="submit" class="btn-primary">Crear mi cuenta</button>
@@ -63,6 +64,12 @@
       </div>
     </header>
 
+    <div id="banner-nombre" class="banner-nombre" style="display:none;">
+      <span>Añade tu nombre para que la otra persona sepa quién eres:</span>
+      <input type="text" id="input-nombre-propio" maxlength="50" placeholder="Tu nombre">
+      <button id="btn-guardar-nombre" class="btn-primary" type="button">Guardar</button>
+    </div>
+
     <main class="container">
       <section class="peticiones-seccion">
         <div class="seccion-header">
@@ -81,7 +88,7 @@
 
       <section class="peticiones-seccion">
         <div class="seccion-header">
-          <h2><span class="seccion-icon">🤲</span> Peticiones de la otra persona</h2>
+          <h2><span class="seccion-icon">🤲</span> Peticiones de <span id="nombre-otro">la otra persona</span></h2>
           <span class="contador" id="contador-otro">0</span>
         </div>
         <p class="seccion-ayuda">Ora por estas peticiones. Cuando Dios responda, márcalas con el check verde.</p>

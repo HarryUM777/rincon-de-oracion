@@ -20,6 +20,7 @@ const db = getDatabase(app);
 
 let currentUser = null;
 let unsubscribePeticiones = null;
+let unsubscribeUsers = null;
 const $ = (id) => document.getElementById(id);
 
 // ============ TEMA ============
@@ -76,15 +77,24 @@ $('form-login').addEventListener('submit', async (e) => {
     $('error-login').textContent = traducirError(err.code);
   }
 });
+
 $('form-registro').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('error-registro').textContent = '';
+  const nombre = $('nombre-registro').value.trim();
+  if (!nombre) {
+    $('error-registro').textContent = 'Por favor escribe tu nombre.';
+    return;
+  }
   try {
-    await createUserWithEmailAndPassword(auth, $('email-registro').value.trim(), $('password-registro').value);
+    const userCred = await createUserWithEmailAndPassword(auth, $('email-registro').value.trim(), $('password-registro').value);
+    // Guardar el nombre en la base de datos bajo /users/{uid}
+    await update(ref(db, `users/${userCred.user.uid}`), { nombre });
   } catch (err) {
     $('error-registro').textContent = traducirError(err.code);
   }
 });
+
 $('btn-logout').addEventListener('click', () => signOut(auth));
 
 function traducirError(code) {
@@ -111,13 +121,16 @@ onAuthStateChanged(auth, (user) => {
     $('app-container').style.display = 'block';
     $('user-email').textContent = user.email;
     iniciarApp();
+    iniciarEscuchaNombres();
   } else {
     currentUser = null;
     if (unsubscribePeticiones) { unsubscribePeticiones(); unsubscribePeticiones = null; }
+    if (unsubscribeUsers) { unsubscribeUsers(); unsubscribeUsers = null; }
     detenerTimerVersiculo();
     categoriaActual = null;
     $('auth-container').style.display = 'flex';
     $('app-container').style.display = 'none';
+    $('banner-nombre').style.display = 'none';
     $('form-login').reset();
     $('form-registro').reset();
     $('error-login').textContent = '';
@@ -149,6 +162,51 @@ function iniciarApp() {
   });
 }
 
+// ============ NOMBRES (usuarios) ============
+function iniciarEscuchaNombres() {
+  unsubscribeUsers = onValue(ref(db, 'users'), (snapshot) => {
+    const users = snapshot.val() || {};
+    const nombrePropio = (users[currentUser.uid] || {}).nombre;
+
+    // Buscar "el otro" usuario (el primero que no sea yo)
+    const otroUid = Object.keys(users).find(uid => uid !== currentUser.uid);
+    const nombreOtro = otroUid ? (users[otroUid] || {}).nombre : null;
+
+    // Actualizar el título de la sección del otro
+    if (nombreOtro) {
+      $('nombre-otro').textContent = nombreOtro;
+    } else {
+      $('nombre-otro').textContent = 'la otra persona';
+    }
+
+    // Mostrar banner si a mí me falta el nombre
+    if (!nombrePropio) {
+      $('banner-nombre').style.display = 'flex';
+    } else {
+      $('banner-nombre').style.display = 'none';
+    }
+  }, (error) => {
+    console.error('Error al leer usuarios:', error);
+  });
+}
+
+$('btn-guardar-nombre').addEventListener('click', async () => {
+  const nombre = $('input-nombre-propio').value.trim();
+  if (!nombre || !currentUser) return;
+  const btn = $('btn-guardar-nombre');
+  btn.disabled = true;
+  try {
+    await update(ref(db, `users/${currentUser.uid}`), { nombre });
+    $('input-nombre-propio').value = '';
+  } catch (err) {
+    console.error(err);
+    alert('No se pudo guardar el nombre.');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ============ RENDER ============
 function renderizarMias(peticiones) {
   const cont = $('lista-mis-peticiones');
   cont.innerHTML = '';
@@ -259,7 +317,7 @@ const VERSICULOS = {
   fe: [
     { texto: '«Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, esto es, a los que conforme a su propósito son llamados.»', cita: 'Romanos 8:28' },
     { texto: '«Es, pues, la fe la certeza de lo que se espera, la convicción de lo que no se ve.»', cita: 'Hebreos 11:1' },
-    { texto: '«Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él endereza­rá tus veredas.»', cita: 'Proverbios 3:5-6' },
+    { texto: '«Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia. Reconócelo en todos tus caminos, y él enderezará tus veredas.»', cita: 'Proverbios 3:5-6' },
     { texto: '«Por tanto, os digo que todo lo que pidiereis orando, creed que lo recibiréis, y os vendrá.»', cita: 'Marcos 11:24' }
   ],
   tristeza: [
