@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5d7b7a">
+  <title>Diario de Oración Compartido</title>
+  <script>
+    (function () {
+      try {
+        const stored = localStorage.getItem('theme');
+        const theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="auth-container" class="auth-container">
+    <div class="auth-card">
+      <button class="theme-toggle theme-toggle-auth" aria-label="Cambiar tema">🌙</button>
+      <div class="auth-header">
+        <div class="auth-icon">🙏</div>
+        <h1>Diario de Oración</h1>
+        <p class="auth-subtitle">Un espacio íntimo para orar juntos</p>
+      </div>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">Iniciar sesión</button>
+        <button type="button" class="auth-tab" data-tab="registro">Crear cuenta</button>
+      </div>
+      <form id="form-login" class="auth-form active">
+        <label><span>Correo electrónico</span><input type="email" id="email-login" required autocomplete="email"></label>
+        <label><span>Contraseña</span><input type="password" id="password-login" required autocomplete="current-password" minlength="6"></label>
+        <button type="submit" class="btn-primary">Entrar</button>
+        <p class="auth-error" id="error-login"></p>
+      </form>
+      <form id="form-registro" class="auth-form">
+        <label><span>Correo electrónico</span><input type="email" id="email-registro" required autocomplete="email"></label>
+        <label><span>Contraseña (mínimo 6 caracteres)</span><input type="password" id="password-registro" required autocomplete="new-password" minlength="6"></label>
+        <button type="submit" class="btn-primary">Crear mi cuenta</button>
+        <p class="auth-error" id="error-registro"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-container" class="app-container" style="display:none;">
+    <header class="app-header">
+      <div class="app-title">
+        <span class="app-icon">🙏</span>
+        <h1>Diario de Oración Compartido</h1>
+        <p class="app-subtitle">"Orad unos por otros" · Santiago 5:16</p>
+      </div>
+      <div class="user-bar">
+        <span class="user-email" id="user-email"></span>
+        <button class="theme-toggle" aria-label="Cambiar tema">🌙</button>
+        <button id="btn-logout" class="btn-ghost">Salir</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="peticiones-seccion">
+        <div class="seccion-header">
+          <h2><span class="seccion-icon">📝</span> Mis Peticiones</h2>
+          <span class="contador" id="contador-mias">0</span>
+        </div>
+        <p class="seccion-ayuda">Comparte por lo que quieres que oremos. La otra persona las verá y podrá marcar cuando Dios responda.</p>
+        <form id="form-mis-peticiones" class="form-peticion">
+          <textarea id="input-mis-peticiones" placeholder="Escribe tu petición aquí..." required maxlength="1000"></textarea>
+          <button type="submit" class="btn-primary">Añadir petición</button>
+        </form>
+        <div id="lista-mis-peticiones" class="lista-peticiones">
+          <div class="empty-state">Aún no has añadido peticiones.</div>
+        </div>
+      </section>
+
+      <section class="peticiones-seccion">
+        <div class="seccion-header">
+          <h2><span class="seccion-icon">🤲</span> Peticiones de la otra persona</h2>
+          <span class="contador" id="contador-otro">0</span>
+        </div>
+        <p class="seccion-ayuda">Ora por estas peticiones. Cuando Dios responda, márcalas con el check verde.</p>
+        <div id="lista-peticiones-otro" class="lista-peticiones">
+          <div class="empty-state">Aún no hay peticiones de la otra persona.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="verse-footer">
+      <div class="verse-card">
+        <div class="verse-mark">❝</div>
+        <p id="versiculo-texto">Cargando versículo...</p>
+        <div class="verse-mark verse-mark-end">❞</div>
+        <div class="verse-dots" id="verse-dots"></div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
